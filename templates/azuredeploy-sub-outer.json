@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rgName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the resource group"
+            },
+            "defaultValue": "learn-arm-test-rg"
+        },
+        "rgLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "Location of the resource group"
+            },
+            "defaultValue": "West Europe"
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the storage account"
+            },
+            "defaultValue": "bpsa1337b"
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('rgName')]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-10-01",
+            "location": "[parameters('rgLocation')]"
+        },
+        {
+            "name": "storageDeployment",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "[parameters('storageAccountName')]",
+                            "type": "Microsoft.Storage/storageAccounts",
+                            "apiVersion": "2019-06-01",
+                            "tags": {
+                                "displayName": "[parameters('storageAccountName')]"
+                            },
+                            "location": "[parameters('rgLocation')]",
+                            "kind": "StorageV2",
+                            "sku": {
+                                "name": "Standard_LRS",
+                                "tier": "Standard"
+                            }
+                        }
+                    ],
+                    "outputs": {}
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
